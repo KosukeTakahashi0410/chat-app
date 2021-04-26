@@ -1,0 +1,42 @@
+name: Build and Deploy
+
+# ワークフローのトリガー
+# 今回はpushをトリガーとする
+on:
+  push:
+    branches:
+      - main
+
+# stepの集合体
+# build/test/package/release/deployなどを行う
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # Jobの一部分のこと
+    # actionsとusesで構成される
+    # usesはgithubActionsで使えるもの
+    # actionsはOSで使えるもの
+    steps:
+      # ここちょっとよくわかってない
+      - name: checkout
+        uses: actions/checkout@v1
+      # nodeの準備
+      - name: setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+      # 依存関係にあるものをインストール
+      - name: install dependencies
+        run: yarn install
+      # ビルド
+      - name: build
+        run: yarn build
+        env:
+          CI: false
+      # firebaseへのデプロイ（actions使用）
+      - name: deploy to firebase
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
