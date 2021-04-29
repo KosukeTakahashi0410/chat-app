@@ -9,7 +9,7 @@ Nodeの公式からインストール、Macであればnodebrewとかでも問�
 yarnのインストール  
 ```
 # npm経由でyarnをインストール
-$ npm instatlll -g yarn
+$ npm instatll -g yarn
 # yarnのバージョン確認
 $ yarn -v
 ```
