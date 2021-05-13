@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 
-const Top = () => {
+const NotFound = () => {
   return (
     <div>
       <h1>404 Not Found</h1>
@@ -10,4 +10,4 @@ const Top = () => {
   );
 }
 
-export default Top
+export default NotFound
