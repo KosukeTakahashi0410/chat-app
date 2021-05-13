@@ -12,7 +12,7 @@ const Signup = () => {
   // パスワード
   const [password, setPassword] = useState("")
 
-  // TODO Takahashi フォームのパラメータのチェックが今のところないので（不正値でもよくなってる）一応確認する、firebase側でエラーハンドリングあったっけ？
+  // TODO Takahashi フォームのパラメータのチェックの実装
   /**
    * inputに入力があったときにパラメータを保存する
    * switchでinputのnameで入力値を判断して各stateに値を保存する
@@ -56,14 +56,6 @@ const Signup = () => {
     }
   }
 
-  //　仮で作成したボタン押下時のイベント
-  const doSomething = () => {
-    console.log(process.env.REACT_APP_LOGIN_REDIRECT_PASS)
-    console.log(name)
-    console.log(email)
-    console.log(password)
-  }
-
   return (
     <div>
       <p>This is Signin page</p>
@@ -75,8 +67,6 @@ const Signup = () => {
       <br />
       <p>Password</p>
       <input type="text" name='password' value={password} onChange={handleChange} />
-      <br />
-      <button onClick={doSomething}>ボタン</button>
       <br />
       <button onClick={signup}>登録する</button>
       <br />
