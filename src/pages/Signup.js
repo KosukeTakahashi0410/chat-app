@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Link, useHistory } from 'react-router-dom'
 import firebase from '../firebase_config'
 
@@ -11,29 +11,74 @@ const Signup = () => {
   const [email, setEmail] = useState('')
   // パスワード
   const [password, setPassword] = useState('')
+  // ユーザーネーム
+  const [nameErrorMessage, setNameErrorMessage] = useState('')
+  // メールアドレス
+  const [emailErrorMessage, setEmailErrorMessage] = useState('')
+  // パスワード
+  const [passwordErrorMessage, setPasswordErrorMessage] = useState('')
 
-  // TODO Takahashi フォームのパラメータのチェックの実装
-  /**
-   * inputに入力があったときにパラメータを保存する
-   * switchでinputのnameで入力値を判断して各stateに値を保存する
-   * @param event 
-   */
-  const handleChange = (event) => {
-    switch (event.target.name) {
-      case 'name':
-        setName(event.target.value)
-        break
-      case 'email':
-        setEmail(event.target.value)
-        break
-      case 'password':
-        setPassword(event.target.value)
-        break
-      default:
-        // 存在しないフォームへの入力なので何もしない
-        break
+  // inputから名前の保存、バリデーション
+  const handleNameChange = e => {
+    const inputValue = e.target.value
+    setName(inputValue)
+    if (!inputValue) {
+      setNameErrorMessage('ユーザーネームを入力してください')
+    } else if (inputValue.length < 5) {
+      // 名前が5文字以下の時
+      setNameErrorMessage('ユーザーネームは5文字以上必要です')
+    } else if (inputValue.length > 50) {
+      // 名前が50文字以上の時
+      setNameErrorMessage('ユーザーネームは5文字以上必要です')
+    } else {
+      setNameErrorMessage('')
     }
   }
+  // inputからメールの保存、バリデーション
+  const handleEmailChange = e => {
+    const inputValue = e.target.value
+    setEmail(inputValue)
+    // 下記リンクからregexは拝借
+    // https://qiita.com/metal_kentucky/items/6ee91514ca19edf453df
+    // eslint-disable-next-line
+    const regex = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
+    if (!inputValue) {
+      setEmailErrorMessage('メールアドレスを入力してください')
+    } else if (!regex.test(inputValue)) {
+      setEmailErrorMessage('メールアドレスを正しい形式で入力してください')
+    } else {
+      setEmailErrorMessage('')
+    }
+  }
+  // inputからパスワードの保存、バリデーション
+  const handlePasswordChange = e => {
+    const inputValue = e.target.value
+    setPassword(inputValue)
+    // パスワードは面倒なので半角英数字のみ
+    const regex = /^[a-zA-Z0-9]*$/
+    if (!inputValue) {
+      setPasswordErrorMessage('パスワードを入力してください')
+    } else if (inputValue.length < 8) {
+      setPasswordErrorMessage('パスワードは8文字以上で入力してください')
+    } else if (inputValue.length > 100) {
+      setPasswordErrorMessage('パスワードは100文字以下で入力してください')
+    } else if (!regex.test(inputValue)) {
+      setPasswordErrorMessage('パスワードには半角英数字をのみが使えます')
+    } else {
+      setPasswordErrorMessage('')
+    }
+  }
+
+  // ボタンを押下可能か否かを設定する
+  const isFormFullfiled = useMemo(() => {
+    if (!name || !email || !password) {
+      return true
+    } else if (nameErrorMessage || emailErrorMessage || passwordErrorMessage) {
+      return true
+    } else {
+      return false
+    }
+  }, [name, email, password, nameErrorMessage, emailErrorMessage, passwordErrorMessage])
 
   // ユーザー登録を行う
   const signup = async () => {
@@ -85,15 +130,18 @@ const Signup = () => {
     <div>
       <p>This is Signin page</p>
       <p>Name</p>
-      <input type="text" name='name' value={name} onChange={handleChange} />
+      <input type="text" value={name} onChange={handleNameChange} />
+      <p>{nameErrorMessage}</p>
       <br />
       <p>Email</p>
-      <input type="text" name='email' value={email} onChange={handleChange} />
+      <input type="text" value={email} onChange={handleEmailChange} />
+      <p>{emailErrorMessage}</p>
       <br />
       <p>Password</p>
-      <input type="text" name='password' value={password} onChange={handleChange} />
+      <input type="text" value={password} onChange={handlePasswordChange} />
+      <p>{passwordErrorMessage}</p>
       <br />
-      <button onClick={signup}>登録する</button>
+      <button onClick={signup} disabled={isFormFullfiled}>登録する</button>
       <br />
       <Link to="/">Got to Top</Link>
     </div >
