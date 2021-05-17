@@ -3,7 +3,7 @@ import { Link, useHistory } from 'react-router-dom'
 import firebase from '../firebase_config'
 
 const Signup = () => {
-  // よくわからない、、、これは一体何なんだ、、、
+  // reactrouterのpushを使うためhistoryのインスタンスを生成
   let history = useHistory()
   // ユーザーネーム
   const [name, setName] = useState('')
