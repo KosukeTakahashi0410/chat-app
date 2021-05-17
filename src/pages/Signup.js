@@ -6,11 +6,11 @@ const Signup = () => {
   // よくわからない、、、これは一体何なんだ、、、
   let history = useHistory()
   // ユーザーネーム
-  const [name, setName] = useState("")
+  const [name, setName] = useState('')
   // メールアドレス
-  const [email, setEmail] = useState("")
+  const [email, setEmail] = useState('')
   // パスワード
-  const [password, setPassword] = useState("")
+  const [password, setPassword] = useState('')
 
   // TODO Takahashi フォームのパラメータのチェックの実装
   /**
@@ -38,6 +38,14 @@ const Signup = () => {
   // ユーザー登録を行う
   const signup = async () => {
     try {
+      /* エラーメッセージが正常に返却されるかを確認するときに使ってください
+      TODO 最終的には削除すること
+      throw {
+        response: {
+          status: 400
+        }
+      }
+      */
       // ユーザーの登録
       await firebase.auth().createUserWithEmailAndPassword(email, password)
       // ユーザー名を保存
@@ -47,12 +55,29 @@ const Signup = () => {
         url: process.env.REACT_APP_LOGIN_REDIRECT_PASS,
         handleCodeInApp: false,
       });
-    } catch (err) {
-      // TODO エラーハンドリングの実装
-      alert(err.message)
-    } finally {
-      // Success画面へ遷移
+      // successページへ遷移
       history.push("/success")
+    } catch (err) {
+      // エラーメッセージはuseStateを使うとどうしてもメッセージが送信できないので一時的に変数を置いて対応
+      // レスポンスが空の場合もあるので対策
+      const statusCode = err.response ? err.response.code : ""
+      let newErrorMessage = ""
+      switch (statusCode) {
+        case 400:
+          newErrorMessage = 'Error occured during request.'
+          break
+        case 404:
+          newErrorMessage = 'Error occured during request.'
+          break
+        default:
+          newErrorMessage = 'System error occured.'
+          break
+      }
+      // errorページへ遷移
+      history.push({
+        pathname: "/error",
+        state: { errorMessage: newErrorMessage }
+      })
     }
   }
 
